@@ -5,6 +5,7 @@ import '../logic/expense_store.dart';
 import 'add_expense_screen.dart';
 import 'widgets/expense_tile.dart';
 import 'widgets/summary_header.dart';
+import 'widgets/weekly_chart.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.store});
@@ -51,6 +52,7 @@ class HomeScreen extends StatelessWidget {
                 totalKobo: store.totalLast7DaysKobo,
                 dailyAverageKobo: store.dailyAverageKobo,
               ),
+              WeeklyChart(days: store.weeklySpend),
               Expanded(
                 child: expenses.isEmpty
                     ? const Center(

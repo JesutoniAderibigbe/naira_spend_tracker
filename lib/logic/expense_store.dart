@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../data/expense.dart';
 import '../data/expense_repository.dart';
+import 'weekly_spend.dart';
 
 /// App state for expenses. Widgets listen to it with [ListenableBuilder].
 class ExpenseStore extends ChangeNotifier {
@@ -24,19 +25,13 @@ class ExpenseStore extends ChangeNotifier {
     return sorted;
   }
 
+  /// Spend per day for the last 7 days, oldest first. Drives the chart.
+  List<DailySpend> get weeklySpend =>
+      lastSevenDays(_repository.getAll(), now());
+
   /// Total spent in the last 7 days, including today.
-  int get totalLast7DaysKobo {
-    final current = now();
-    final start = DateTime(
-      current.year,
-      current.month,
-      current.day,
-    ).subtract(const Duration(days: 6));
-    return _repository
-        .getAll()
-        .where((e) => !e.date.isBefore(start))
-        .fold(0, (sum, e) => sum + e.amountKobo);
-  }
+  int get totalLast7DaysKobo =>
+      weeklySpend.fold(0, (sum, day) => sum + day.totalKobo);
 
   /// Average spend per day over the last 7 days.
   int get dailyAverageKobo => totalLast7DaysKobo ~/ 7;

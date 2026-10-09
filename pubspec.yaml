@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Bar chart for the weekly spending summary (added in step 2).
+  fl_chart: ^1.2.0
   # Debug-only bridge that lets AI agents tap, type, scroll and screenshot
   # the running app through Marionette MCP. Initialized in lib/main.dart.
   marionette_flutter: ^0.7.0
