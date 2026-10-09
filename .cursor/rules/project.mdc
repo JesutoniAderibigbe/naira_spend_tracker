@@ -1,0 +1,7 @@
+---
+description: Naira Spend Tracker project rules
+alwaysApply: true
+---
+
+Follow every rule in @AGENTS.md at the repository root. Before reporting a task
+as finished, run the `spend-tracker-definition-of-done` skill in `.agents/skills`.

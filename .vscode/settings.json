@@ -1,0 +1,7 @@
+{
+  "dart.mcpServer": true,
+  "editor.formatOnSave": true,
+  "[dart]": {
+    "editor.rulers": [80]
+  }
+}

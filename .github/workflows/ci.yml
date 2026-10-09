@@ -1,0 +1,34 @@
+name: CI
+
+# Runs on every checkpoint branch, so a push of all branches proves each
+# workshop step analyzes cleanly and its tests pass.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter --version
+      - run: flutter pub get
+
+      # Infos are allowed so 00-start's planted deprecation does not fail CI.
+      - run: flutter analyze --no-fatal-infos
+
+      # Advisory: shows formatting drift without failing the build.
+      - name: dart format (advisory)
+        run: dart format --output=none --set-exit-if-changed lib test
+        continue-on-error: true
+
+      - name: flutter test
+        run: |
+          if [ -d test ]; then flutter test; fi

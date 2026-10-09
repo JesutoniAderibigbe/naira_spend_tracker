@@ -1,0 +1,26 @@
+name: naira_spend_tracker
+description: "Workshop app for 'Your Next Teammate is an Agent: AI-Powered Flutter Development'."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Debug-only bridge that lets AI agents tap, type, scroll and screenshot
+  # the running app through Marionette MCP. Initialized in lib/main.dart.
+  marionette_flutter: ^0.7.0
+  # Lets the official Dart and Flutter MCP server drive the app.
+  # Only enabled with --dart-define=ENABLE_FLUTTER_DRIVER=true.
+  flutter_driver:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

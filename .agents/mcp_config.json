@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "dart": { "command": "dart", "args": ["mcp-server"] },
+    "marionette": { "command": "marionette_mcp", "args": [] },
+    "figma-flutter": {
+      "command": "npx",
+      "args": ["-y", "figma-flutter-mcp", "--stdio"]
+    },
+    "firebase": { "command": "npx", "args": ["-y", "firebase-tools@latest", "mcp"] }
+  }
+}
