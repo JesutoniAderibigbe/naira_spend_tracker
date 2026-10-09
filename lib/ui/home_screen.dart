@@ -46,32 +46,40 @@ class HomeScreen extends StatelessWidget {
         listenable: store,
         builder: (context, _) {
           final expenses = store.expenses;
-          return Column(
-            children: [
-              SummaryHeader(
-                totalKobo: store.totalLast7DaysKobo,
-                dailyAverageKobo: store.dailyAverageKobo,
+          // One scroll view for everything, so the header and chart never
+          // squeeze the list (or overflow) on short or landscape screens.
+          return CustomScrollView(
+            key: const Key('expenseList'),
+            slivers: [
+              SliverToBoxAdapter(
+                child: SummaryHeader(
+                  totalKobo: store.totalLast7DaysKobo,
+                  dailyAverageKobo: store.dailyAverageKobo,
+                ),
               ),
-              WeeklyChart(days: store.weeklySpend),
-              Expanded(
-                child: expenses.isEmpty
-                    ? const Center(
-                        child: Text('No expenses yet. Tap "Add expense".'),
-                      )
-                    : ListView.builder(
-                        key: const Key('expenseList'),
-                        padding: const EdgeInsets.only(bottom: 88),
-                        itemCount: expenses.length,
-                        itemBuilder: (context, index) {
-                          final expense = expenses[index];
-                          return ExpenseTile(
-                            key: ValueKey(expense.id),
-                            expense: expense,
-                            onDelete: () => _delete(context, expense),
-                          );
-                        },
-                      ),
-              ),
+              SliverToBoxAdapter(child: WeeklyChart(days: store.weeklySpend)),
+              if (expenses.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Text('No expenses yet. Tap "Add expense".'),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 88),
+                  sliver: SliverList.builder(
+                    itemCount: expenses.length,
+                    itemBuilder: (context, index) {
+                      final expense = expenses[index];
+                      return ExpenseTile(
+                        key: ValueKey(expense.id),
+                        expense: expense,
+                        onDelete: () => _delete(context, expense),
+                      );
+                    },
+                  ),
+                ),
             ],
           );
         },
