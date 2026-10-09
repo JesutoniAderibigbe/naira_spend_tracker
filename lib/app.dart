@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'logic/expense_store.dart';
 import 'ui/home_screen.dart';
+import 'ui/theme/app_theme.dart';
 
 class SpendTrackerApp extends StatelessWidget {
   const SpendTrackerApp({super.key, required this.store});
@@ -13,15 +14,8 @@ class SpendTrackerApp extends StatelessWidget {
     return MaterialApp(
       title: 'Naira Spend Tracker',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF008751)),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF008751),
-          brightness: Brightness.dark,
-        ),
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       home: HomeScreen(store: store),
     );
   }

@@ -32,6 +32,37 @@ class HomeScreen extends StatelessWidget {
     ).showSnackBar(SnackBar(content: Text('Deleted "${expense.title}"')));
   }
 
+  /// Widths at or above this get the two-column tablet and desktop layout.
+  /// 840 is the Material 3 "expanded" window size class.
+  static const double wideLayoutBreakpoint = 840;
+
+  List<Widget> _expenseSlivers(BuildContext context, List<Expense> expenses) {
+    if (expenses.isEmpty) {
+      return const [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(child: Text('No expenses yet. Tap "Add expense".')),
+        ),
+      ];
+    }
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.only(top: 8, bottom: 88),
+        sliver: SliverList.builder(
+          itemCount: expenses.length,
+          itemBuilder: (context, index) {
+            final expense = expenses[index];
+            return ExpenseTile(
+              key: ValueKey(expense.id),
+              expense: expense,
+              onDelete: () => _delete(context, expense),
+            );
+          },
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +70,7 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('addExpenseFab'),
         onPressed: () => _openAddExpense(context),
+        tooltip: 'Add a new expense',
         icon: const Icon(Icons.add),
         label: const Text('Add expense'),
       ),
@@ -46,41 +78,48 @@ class HomeScreen extends StatelessWidget {
         listenable: store,
         builder: (context, _) {
           final expenses = store.expenses;
-          // One scroll view for everything, so the header and chart never
-          // squeeze the list (or overflow) on short or landscape screens.
-          return CustomScrollView(
-            key: const Key('expenseList'),
-            slivers: [
-              SliverToBoxAdapter(
-                child: SummaryHeader(
-                  totalKobo: store.totalLast7DaysKobo,
-                  dailyAverageKobo: store.dailyAverageKobo,
-                ),
-              ),
-              SliverToBoxAdapter(child: WeeklyChart(days: store.weeklySpend)),
-              if (expenses.isEmpty)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(
-                    child: Text('No expenses yet. Tap "Add expense".'),
-                  ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 88),
-                  sliver: SliverList.builder(
-                    itemCount: expenses.length,
-                    itemBuilder: (context, index) {
-                      final expense = expenses[index];
-                      return ExpenseTile(
-                        key: ValueKey(expense.id),
-                        expense: expense,
-                        onDelete: () => _delete(context, expense),
-                      );
-                    },
-                  ),
-                ),
-            ],
+          final summary = SummaryHeader(
+            totalKobo: store.totalLast7DaysKobo,
+            dailyAverageKobo: store.dailyAverageKobo,
+          );
+          final chart = WeeklyChart(days: store.weeklySpend);
+
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth >= wideLayoutBreakpoint) {
+                // Tablet and desktop: overview on the left, list on the right.
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 400,
+                      child: ListView(
+                        key: const Key('overviewPane'),
+                        children: [summary, chart],
+                      ),
+                    ),
+                    const VerticalDivider(width: 1),
+                    Expanded(
+                      child: CustomScrollView(
+                        key: const Key('expenseList'),
+                        slivers: _expenseSlivers(context, expenses),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              // Phones: one scroll view for everything, so the header and
+              // chart never squeeze the list on short or landscape screens.
+              return CustomScrollView(
+                key: const Key('expenseList'),
+                slivers: [
+                  SliverToBoxAdapter(child: summary),
+                  SliverToBoxAdapter(child: chart),
+                  ..._expenseSlivers(context, expenses),
+                ],
+              );
+            },
           );
         },
       ),

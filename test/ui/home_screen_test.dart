@@ -38,6 +38,8 @@ void main() {
     ('small phone portrait', const Size(360, 640)),
     ('small phone landscape', const Size(640, 360)),
     ('large phone portrait', const Size(412, 915)),
+    ('tablet landscape', const Size(1280, 800)),
+    ('desktop window', const Size(1440, 900)),
   ]) {
     testWidgets('no layout overflow on a $name', (tester) async {
       useScreenSize(tester, size);
@@ -80,5 +82,25 @@ void main() {
 
     expect(store.expenses.any((e) => e.id == newest.id), isFalse);
     expect(find.text('Deleted "${newest.title}"'), findsOneWidget);
+  });
+
+  testWidgets('wide screens get the two-column layout', (tester) async {
+    useScreenSize(tester, const Size(1280, 800));
+
+    await tester.pumpWidget(SpendTrackerApp(store: sampleStore()));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('overviewPane')), findsOneWidget);
+    expect(find.byType(WeeklyChart), findsOneWidget);
+    expect(find.text('Jollof rice and chicken'), findsOneWidget);
+  });
+
+  testWidgets('phones keep the single-column layout', (tester) async {
+    useScreenSize(tester, const Size(412, 915));
+
+    await tester.pumpWidget(SpendTrackerApp(store: sampleStore()));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('overviewPane')), findsNothing);
   });
 }

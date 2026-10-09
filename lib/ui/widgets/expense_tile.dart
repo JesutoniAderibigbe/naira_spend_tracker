@@ -31,7 +31,11 @@ class ExpenseTile extends StatelessWidget {
             style: theme.textTheme.titleMedium,
           ),
           IconButton(
+            key: Key('delete-${expense.id}'),
             icon: const Icon(Icons.delete_outline),
+            // Gives screen readers a label and mouse users a hint. Fixes the
+            // issue the accessibility audit found in step 6.
+            tooltip: 'Delete ${expense.title}',
             onPressed: onDelete,
           ),
         ],
